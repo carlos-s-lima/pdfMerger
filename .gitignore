@@ -10,3 +10,5 @@ build/
 dist/
 .mypy_cache/
 .pytest_cache/
+input/
+output/
