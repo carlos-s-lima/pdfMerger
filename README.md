@@ -1,5 +1,5 @@
 ```markdown
-![Python Badge](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+<img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" alt="Logo Python" width="50" height="50">
 
 ## Projeto de Mesclagem de PDFs em Python
 
