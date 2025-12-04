@@ -1,77 +1,74 @@
-# Mesclador de PDFs em Python
+# 🔗 PDF Merger CLI
 
-## Logo da Linguagem
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat&logo=python&logoColor=white)
+![CLI](https://img.shields.io/badge/Interface-CLI%20(argparse)-brightgreen)
 
-![Python Badge](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-
-## Projeto de Mesclagem de PDFs em Python
-
-Este documento apresenta a estrutura e as funcionalidades de um projeto em Python voltado para a mesclagem (combinação) de múltiplos arquivos PDF em um único documento. A arquitetura atual é simples e visa a modularidade, facilitando futuras expansões.
+Este projeto é uma ferramenta de linha de comando (CLI) desenvolvida em Python para mesclar múltiplos arquivos PDF de forma segura e ordenada. A arquitetura segue o paradigma de Programação Orientada a Objetos (POO), garantindo a separação de responsabilidades e preparando a base para uma futura interface gráfica (GUI).
 
 ---
 
-### Funcionalidades Atuais
+## ✨ Funcionalidades
 
-O projeto é composto por três módulos principais: status.py, merger.py e main.py.
+A aplicação oferece as seguintes funcionalidades principais via linha de comando:
 
-#### 1. Módulo status.py
-
-O status.py utiliza a classe Enum do Python para definir um conjunto de estados bem definidos para o processo de mesclagem:
-
-* WAITING: Estado inicial, aguardando a execução.
-* PROCESSING: A mesclagem está em andamento.
-* SUCCESS: Mesclagem concluída com sucesso.
-* ERROR: Um erro ocorreu durante a mesclagem.
-
-A vantagem é que isso garante que o estado da operação seja sempre uma das opções válidas, facilitando a depuração e o desenvolvimento da interface de usuário.
-
-#### 2. Módulo merger.py (Classe Merger)
-
-Este é o coração da aplicação, responsável pela lógica de manipulação dos PDFs.
-
-* Inicialização (__init__): Mantém uma lista de caminhos de arquivo (self.list_of_files), rastreia o estado atual (self.status) e armazena mensagens de erro (self.error_message).
-* Gerenciamento de Arquivos: add_file(file_path) adiciona um caminho de arquivo; remove_file(file_path) remove um caminho de arquivo.
-* Estrutura de Diretórios (_ensure_directories_exist): Cria as pastas input/ e output/ se elas não existirem.
-* Mesclagem Principal (merge_pdfs): Define o status para PROCESSING e utiliza a classe PdfWriter da biblioteca pypdf. Percorre a lista de arquivos, adicionando cada PDF. Salva o arquivo final no output_path. Gerencia o estado, definindo para SUCCESS em caso de êxito ou ERROR se uma exceção ocorrer. Garante que o objeto merger seja fechado no bloco finally.
-
-#### 3. Módulo main.py (Função run_simple_test)
-
-Este módulo é um exemplo de utilização e um mecanismo de teste básico.
-
-* Configuração: Instancia a classe Merger e garante que as pastas de input e output existam.
-* Validação de Arquivos: Verifica se os arquivos de teste (requeridos na pasta input/) existem no disco.
-* Contagem de Páginas: Calcula o número total de páginas esperado.
-* Execução: Chama o método pdf_merger.merge_pdfs().
-* Verificação de Resultados: Confirma se o status é SUCCESS, verifica se o arquivo de saída foi criado, e compara o número de páginas obtido com o número de páginas esperado.
+* **Seleção Flexível:** Aceita um ou mais caminhos de arquivos PDF como entrada (`argparse` com `nargs='+'`). Os caminhos podem ser absolutos (de qualquer lugar do sistema) ou relativos.
+* **Mesclagem Ordenada:** Os arquivos são mesclados na ordem exata em que são fornecidos como argumentos na CLI.
+* **Contagem de Páginas:** Exibe o número de páginas de cada arquivo de entrada e o total esperado após a mesclagem.
+* **Prevenção de Sobrescrita:** Implementa **Versionamento Automático** na saída (ex: `merged_cli_1.pdf`, `merged_cli_2.pdf`) para garantir que nenhum arquivo existente seja perdido acidentalmente.
+* **Arquitetura POO:** A lógica de negócio está encapsulada nas classes (`Merger`, `PdfFile`, `Status`), facilitando a transição para uma GUI no futuro.
 
 ---
 
-### Escolha de Arquitetura: Poetry
+## ⚙️ Instalação e Dependências
 
-O projeto é estruturado para ser gerenciado via Poetry.
+A única dependência externa necessária para a execução do programa é a biblioteca `pypdf`.
 
-* Gerenciamento de Dependências: O Poetry isola as dependências (como pypdf) do ambiente global do sistema, garantindo a reprodutibilidade.
-* Ambiente Virtual: Gerencia automaticamente um ambiente virtual dedicado.
-* Empacotamento Futuro: Simplifica a conversão para um pacote Python distribuível, útil para futuras funcionalidades de CLI e GUI.
+### Requisitos
+
+* **Python:** Versão 3.8+
+* **pypdf:** Biblioteca para manipulação de PDFs.
+
+### Setup (Recomendado: Poetry)
+
+Para desenvolvedores, recomenda-se o uso do [Poetry](https://python-poetry.org/) para gerenciar o ambiente:
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone [SEU_LINK_DO_REPOSITORIO]
+    cd [pasta-do-projeto]
+    ```
+
+2.  **Instale as dependências:**
+    ```bash
+    poetry install
+    ```
+
+### Setup (Alternativo: Pip/Venv)
+
+Para usuários finais que preferem ambientes virtuais padrão (`venv`):
+
+1.  **Crie e Ative o ambiente virtual:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # macOS/Linux
+    .\venv\Scripts\activate   # Windows
+    ```
+2.  **Instale a dependência:**
+    ```bash
+    pip install pypdf
+    ```
 
 ---
 
-### Features Futuras Planejadas
+## 🚀 Uso da Aplicação (CLI)
 
-As seguintes funcionalidades são prioridades para a próxima fase:
+A aplicação é executada através do script `main.py`.
 
-#### 1. Interface de Linha de Comando (CLI) Funcional
+### Sintaxe Básica
 
-* Objetivo: Permitir que o usuário interaja com a ferramenta diretamente pelo terminal.
-* Funcionalidades: Comandos para adicionar arquivos por caminho (merger add <file>) e executar a mesclagem (merger run <output_name>). Opções para listar e remover arquivos.
+```bash
+# Se estiver usando Poetry:
+poetry run python main.py [ARQUIVO_1] [ARQUIVO_2] ... [ARQUIVO_N] [-o NOME_DE_SAIDA]
 
-#### 2. Interface Gráfica de Usuário (GUI)
-
-* Objetivo: Oferecer uma maneira mais acessível e visual de usar o programa.
-* Tecnologia Sugerida: Uma biblioteca como Tkinter ou Qt (PyQt ou PySide).
-* Integração: A GUI utilizará a mesma classe Merger, apenas alterando o módulo main.py.
-
-#### 3. Testes Unitários Abrangentes
-
-* Objetivo: Garantir a estabilidade e a correção do código.
-* Foco Principal: Testar a classe Merger, incluindo testes de adição/remoção de arquivos, testes de estado e testes de exceção (simulação de arquivos corrompidos).
+# Se estiver usando venv/Pip ativo:
+python main.py [ARQUIVO_1] [ARQUIVO_2] ... [ARQUIVO_N] [-o NOME_DE_SAIDA]
