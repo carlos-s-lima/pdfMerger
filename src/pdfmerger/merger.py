@@ -3,12 +3,12 @@ from status import Status
 from pypdf import PdfReader, PdfWriter
 import os
 from pathlib import Path
+from files import PdfFile
 
 class Merger:
     
     def __init__(self):
-        
-        self.list_of_files: List[str] = []
+        self.list_of_files: List[PdfFile] = []
         self.status: str = Status.WAITING.value
         self.error_message:str = ""
 
@@ -19,14 +19,14 @@ class Merger:
         Path(input_dir).mkdir(exist_ok=True)
         Path(output_dir).mkdir(exist_ok=True)
 
-    def add_file(self, file_path: str) -> None:
+    def add_file(self, pdf_file_obj: PdfFile) -> None:
         
-        self.list_of_files.append(file_path)
+        self.list_of_files.append(pdf_file_obj)
 
-    def remove_file(self, file_path: str) -> None:
+    def remove_file(self, pdf_file_obj: PdfFile) -> None:
         
-        if file_path in self.list_of_files:
-            self.list_of_files.remove(file_path)
+        if pdf_file_obj in self.list_of_files:
+            self.list_of_files.remove(pdf_file_obj)
 
     def merge_pdfs(self, output_path: str) -> None:
         
@@ -42,9 +42,10 @@ class Merger:
         try:
             self.status = Status.PROCESSING.value
             
-            for file_path in self.list_of_files:
-                reader = PdfReader(file_path)
+            for pdf_file_obj in self.list_of_files:
+                reader = pdf_file_obj.get_reader()
                 merger.append(reader)
+                
             merger.write(output_path)
             self.status = Status.SUCCESS.value
             self.error_message = ""
