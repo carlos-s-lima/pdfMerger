@@ -1,83 +1,135 @@
 # 🔗 PDF Merger CLI
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat&logo=python&logoColor=white)
-![CLI](https://img.shields.io/badge/Interface-CLI%20(argparse)-brightgreen)
+![Terminal](https://img.shields.io/badge/Terminal-Bash-orange?style=flat&logo=gnu-bash)
 
-Este projeto é uma ferramenta de linha de comando (CLI) desenvolvida em Python para mesclar múltiplos arquivos PDF de forma segura e ordenada. A arquitetura segue o paradigma de Programação Orientada a Objetos (POO), garantindo a separação de responsabilidades e preparando a base para uma futura interface gráfica (GUI).
-
----
-
-## ✨ Funcionalidades
-
-A aplicação oferece as seguintes funcionalidades principais via linha de comando:
-
-* **Seleção Flexível:** Aceita um ou mais caminhos de arquivos PDF como entrada (`argparse` com `nargs='+'`). Os caminhos podem ser absolutos (de qualquer lugar do sistema) ou relativos.
-* **Mesclagem Ordenada:** Os arquivos são mesclados na ordem exata em que são fornecidos como argumentos na CLI.
-* **Contagem de Páginas:** Exibe o número de páginas de cada arquivo de entrada e o total esperado após a mesclagem.
-* **Prevenção de Sobrescrita:** Implementa **Versionamento Automático** na saída (ex: `merged_cli_1.pdf`, `merged_cli_2.pdf`) para garantir que nenhum arquivo existente seja perdido acidentalmente.
-* **Arquitetura POO:** A lógica de negócio está encapsulada nas classes (`Merger`, `PdfFile`, `Status`), facilitando a transição para uma GUI no futuro.
+Ferramenta de linha de comando (CLI) em Python para mesclar múltiplos arquivos PDF de forma segura, previsível e reprodutível. Projetada com princípios de Programação Orientada a Objetos para facilitar manutenção e futura evolução (ex.: GUI).
 
 ---
 
-## ⚙️ Instalação e Dependências
+## Principais funcionalidades
 
-A única dependência externa necessária para a execução do programa é a biblioteca `pypdf`.
-
-### Requisitos
-
-* **Python:** Versão 3.8+
-* **pypdf:** Biblioteca para manipulação de PDFs.
-
-### Setup (Recomendado: Poetry)
-
-Para desenvolvedores, recomenda-se o uso do [Poetry](https://python-poetry.org/) para gerenciar o ambiente:
-
-1.  **Clone o repositório:**
-    ```bash
-    git clone [SEU_LINK_DO_REPOSITORIO]
-    cd [pasta-do-projeto]
-    ```
-
-2.  **Instale as dependências:**
-    ```bash
-    poetry install
-    ```
-
-### Setup (Alternativo: Pip/Venv)
-
-Para usuários finais que preferem ambientes virtuais padrão (`venv`):
-
-1.  **Crie e Ative o ambiente virtual:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # macOS/Linux
-    .\venv\Scripts\activate   # Windows
-    ```
-2.  **Instale a dependência:**
-    ```bash
-    pip install pypdf
-    ```
+- Mesclagem de múltiplos PDFs na ordem informada.
+- Contagem de páginas por arquivo e total esperado.
+- Prevenção de sobrescrita com versionamento automático do arquivo de saída (ex.: merged_cli.pdf → merged_cli_1.pdf).
+- Criação automática do diretório de saída, quando ausente.
+- Saídas claras no terminal: progresso, sucessos e erros.
+- Arquitetura modular e testável (classes separadas para responsabilidades).
 
 ---
 
-## 🚀 Uso da Aplicação (CLI)
+## Arquitetura (visão geral)
 
-A aplicação é executada através do script `main.py`.
+- src/pdfmerger/main.py
+  - Orquestra a execução: parse de args, validação, soma de páginas, execução da mesclagem e código de saída.
+- src/pdfmerger/cli_utils.py
+  - Tratamento de argumentos (argparse) e lógica de obtenção de caminho único para saída (get_unique_output_path).
+- src/pdfmerger/files.py
+  - Classe PdfFile: valida existência, lê arquivo via pypdf e expõe page_count e get_reader().
+- src/pdfmerger/merger.py
+  - Classe Merger: mantém lista de PdfFile, adiciona/remove arquivos e realiza a escrita final via pypdf.PdfWriter.
+- src/pdfmerger/status.py
+  - Enum Status para controlar estados: WAITING, PROCESSING, SUCCESS, ERROR.
 
-### Sintaxe Básica
+Separação de responsabilidades:
+- PdfFile cuida de validação/leitura do PDF.
+- Merger cuida apenas do processo de mesclagem.
+- Main lida com interação com o usuário (terminal) e fluxo de execução.
 
+---
+
+## Requisitos
+
+- Python 3.8+
+- Dependência: pypdf
+
+Instalar com pip:
 ```bash
-# Se estiver usando Poetry:
-poetry run python main.py [ARQUIVO_1] [ARQUIVO_2] ... [ARQUIVO_N] [-o NOME_DE_SAIDA]
+pip install pypdf
+```
 
-# Se estiver usando venv/Pip ativo:
-python main.py [ARQUIVO_1] [ARQUIVO_2] ... [ARQUIVO_N] [-o NOME_DE_SAIDA]
+Recomendado: usar Poetry ou venv para isolar dependências.
 
-💡 Comportamento Padrão (Default)
-Caso o argumento -o (output) não seja fornecido, a aplicação adotará o seguinte comportamento:
+---
 
-Tentará salvar o arquivo em: output/merged_cli.pdf.
+## Instalação (exemplos)
 
-Se a pasta output não existir, ela será criada automaticamente.
+Com Poetry:
+```bash
+poetry install
+```
 
-Se o arquivo merged_cli.pdf já existir, o sistema salvará como merged_cli_1.pdf (e assim por diante).
+Com venv (Windows):
+```powershell
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install pypdf
+```
+
+---
+
+## Uso (CLI)
+
+Sintaxe:
+```bash
+# Exemplo geral (quando executando o script main.py do diretório do projeto)
+python main.py arquivo1.pdf arquivo2.pdf -o output/saida.pdf
+
+# Com Poetry
+poetry run python main.py arquivo1.pdf arquivo2.pdf -o output/saida.pdf
+```
+
+Comportamento padrão:
+- Se `-o/--output` não for fornecido, o arquivo alvo será `output/merged_cli.pdf`.
+- Se `output/` não existir, será criado automaticamente.
+- Se `merged_cli.pdf` já existir, será criado `merged_cli_1.pdf`, `merged_cli_2.pdf`, etc.
+
+Exemplo (Windows):
+```powershell
+python main.py C:\docs\a.pdf C:\docs\b.pdf -o C:\docs\output\final.pdf
+```
+
+Saída no terminal:
+- Mensagens [OK] para arquivos processados com contagem de páginas.
+- Avisos/erros para arquivos não encontrados ou com leitura inválida.
+- Resumo final com total de arquivos, páginas esperadas e caminho do arquivo gerado.
+- Código de saída não-zero em caso de falha (sys.exit(1)).
+
+---
+
+## Erros e tratamento
+
+- Arquivos inexistentes → mensagem de erro e término com código 1.
+- Falha na leitura de PDF → aviso (arquivo ignorado ou processo interrompido conforme o caso).
+- Falha durante mesclagem → status ERROR e mensagem com motivo; saída com código 1.
+
+---
+
+## Boas práticas e notas de implementação
+
+- Os objetos PdfFile armazenam um PdfReader apenas quando necessário (lazy).
+- Merger usa PdfWriter para anexar leitores e escrever o arquivo final; sempre encerra o writer no finally.
+- Mantém estado via Status enum para facilitar integração com interfaces futuras.
+
+---
+
+## Testes e desenvolvimento
+
+- Arquitetura modular facilita criação de testes unitários por componente (PdfFile, Merger, cli_utils).
+- Sugestão: usar pytest e monkeypatch para simular arquivos e comportamento de pypdf.
+
+---
+
+## Contribuição
+
+- Abrir issue para bugs ou sugestões.
+- Enviar PR com descrição clara e testes (quando aplicável).
+- Seguir estilo de código do projeto e manter compatibilidade com Python 3.8+.
+
+---
+
+## Licença
+
+Adicionar licença do projeto conforme desejado (por exemplo MIT). 
+
+<!-- ...existing code... -->
