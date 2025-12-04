@@ -117,19 +117,3 @@ Saída no terminal:
 
 - Arquitetura modular facilita criação de testes unitários por componente (PdfFile, Merger, cli_utils).
 - Sugestão: usar pytest e monkeypatch para simular arquivos e comportamento de pypdf.
-
----
-
-## Contribuição
-
-- Abrir issue para bugs ou sugestões.
-- Enviar PR com descrição clara e testes (quando aplicável).
-- Seguir estilo de código do projeto e manter compatibilidade com Python 3.8+.
-
----
-
-## Licença
-
-Adicionar licença do projeto conforme desejado (por exemplo MIT). 
-
-<!-- ...existing code... -->
