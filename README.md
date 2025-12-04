@@ -72,3 +72,12 @@ poetry run python main.py [ARQUIVO_1] [ARQUIVO_2] ... [ARQUIVO_N] [-o NOME_DE_SA
 
 # Se estiver usando venv/Pip ativo:
 python main.py [ARQUIVO_1] [ARQUIVO_2] ... [ARQUIVO_N] [-o NOME_DE_SAIDA]
+
+💡 Comportamento Padrão (Default)
+Caso o argumento -o (output) não seja fornecido, a aplicação adotará o seguinte comportamento:
+
+Tentará salvar o arquivo em: output/merged_cli.pdf.
+
+Se a pasta output não existir, ela será criada automaticamente.
+
+Se o arquivo merged_cli.pdf já existir, o sistema salvará como merged_cli_1.pdf (e assim por diante).
